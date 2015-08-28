@@ -86,6 +86,7 @@ def get_soup():
         WEBSITE = args['website']
         if ("http" not in WEBSITE):
             WEBSITE = "http://" + WEBSITE
+        page = urllib2.urlopen(WEBSITE)
         stream = page.read()
     else:
         stream = sys.stdin.read()
@@ -94,13 +95,13 @@ def get_soup():
 
 def color_tags( tags ):
     def color_src( tt ):
-        return jcolor.BGBLACK + jcolor.FGYELLOW + str( tt.get('src')) + jcolor.ENDC
+        return jcolor.BGBLACK + jcolor.FGYELLOW + str( tt ) + jcolor.ENDC
     def color_href( tt ):
-        return jcolor.BGBLACK + jcolor.FGORANGE + str(tt.get('href')) + jcolor.ENDC
+        return jcolor.BGBLACK + jcolor.FGORANGE + str( tt ) + jcolor.ENDC
     def color_names( tt ):
-        return jcolor.BGBLACK + jcolor.FGORANGE + str(tt.get('id')) + jcolor.ENDC
+        return jcolor.BGBLACK + jcolor.FGORANGE + str( tt ) + jcolor.ENDC
     def color_none( tt ):
-        return jcolor.BGBLACK + jcolor.FGGREEN + str(tt) + jcolor.ENDC
+        return jcolor.BGBLACK + jcolor.FGGREEN + str( tt ) + jcolor.ENDC
 
     if (args['src_only']):
         return map(color_src, tags)
