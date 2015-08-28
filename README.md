@@ -26,6 +26,9 @@ Same as above except we leave off the website name.
 
 ```curl doge4.us | pulltag img -src```  
 
+##Help
+```pulltag -h```  
+
 ##Donate
 Donate Bitcoin: 19Ve bRAu 8ZdT zf7A JnJv dCyh qSBZ qMon T
 
