@@ -97,13 +97,13 @@ def get_soup():
 
 def color_tags( tags ):
     def color_src( tt ):
-        return jcolor.BGBLACK + jcolor.FGYELLOW + str( tt ) + jcolor.ENDC
+        return jcolor.FGYELLOW + str( tt ) + jcolor.ENDC
     def color_href( tt ):
-        return jcolor.BGBLACK + jcolor.FGORANGE + str( tt ) + jcolor.ENDC
+        return jcolor.FGORANGE + str( tt ) + jcolor.ENDC
     def color_names( tt ):
-        return jcolor.BGBLACK + jcolor.FGORANGE + str( tt ) + jcolor.ENDC
+        return jcolor.FGORANGE + str( tt ) + jcolor.ENDC
     def color_none( tt ):
-        return jcolor.BGBLACK + jcolor.FGGREEN + str( tt ) + jcolor.ENDC
+        return jcolor.FGGREEN + str( tt ) + jcolor.ENDC
 
     if (args['src_only']):
         return map(color_src, tags)
