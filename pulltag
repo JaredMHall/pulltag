@@ -1,0 +1,536 @@
+#!/usr/bin/env python
+import argparse
+import sys
+from BeautifulSoup import BeautifulSoup
+import urllib2
+import jcolor 
+
+#
+#      ___         ___                                                     ___           ___          
+#     /\  \       /\  \                                                   /\  \         /\__\        
+#    /::\  \      \:\  \                                     ___         /::\  \       /:/ _/_      
+#   /:/\:\__\      \:\  \                                   /\__\       /:/\:\  \     /:/ /\  \    
+#  /:/ /:/  /  ___  \:\  \   ___     ___   ___     ___     /:/  /      /:/ /::\  \   /:/ /::\  \   
+# /:/_/:/  /  /\  \  \:\__\ /\  \   /\__\ /\  \   /\__\   /:/__/      /:/_/:/\:\__\ /:/__\/\:\__\ 
+# \:\/:/  /   \:\  \ /:/  / \:\  \ /:/  / \:\  \ /:/  /  /::\  \      \:\/:/  \/__/ \:\  \ /:/  / 
+#  \::/__/     \:\  /:/  /   \:\  /:/  /   \:\  /:/  /  /:/\:\  \      \::/__/       \:\  /:/  /   
+#   \:\  \      \:\/:/  /     \:\/:/  /     \:\/:/  /   \/__\:\  \      \:\  \        \:\/:/  /     
+#    \:\__\      \::/  /       \::/  /       \::/  /         \:\__\      \:\__\        \::/  /       
+#     \/__/       \/__/         \/__/         \/__/           \/__/       \/__/         \/__/       
+#
+# Author: Jared Marshall Hall
+# License: MIT License
+# Contact: hall.jared.m@gmail.com
+# Created: August 21, 2015
+# Purpose: Easily and quickly scrape html tags by name, id, and class. Return full tag text, id name, class name, or just src or href links. 
+# Why: To my knowledge there are libraries, but there aren't any programs designed specifically for this purpose.   
+# Uses: Can be use with a website name as input, or a pipe. 
+# Installation: Can be added to usr/local/bin like so (for calling straight from the command line regardless of current folder):
+#         cd /usr/local/bin (command below must be called from within this folder)
+#         sudo ln -s <path_to_pulltag/pulltag>  (add symbolic link to pulltag.. make sure jcolor.py is in the same directory as original pulltag)
+#         chmod +x pulltag (make pulltag executable)
+#
+#     Donate Bitcoin:
+#     1AYk yF8P 1k19 NpAA xxEm WBa6 rp7g wgHz dr
+#
+#     Donate Dogecoin:
+#     DBGX4dwhD7SHhfcgzKjSZ2yJDhruAPgPUP
+#
+#     Donate via Paypal:
+#     http://bit.ly/1klxN1M
+#
+
+# TODO remove debug messages
+# TODO make colors better
+# TODO ascii art
+
+argc = len(sys.argv)
+
+parser = argparse.ArgumentParser()
+
+if sys.stdin.isatty(): # check to see if we are using a text file ...
+    parser.add_argument('website', help='Name of website.')
+    parser.add_argument('tag', help='Tag to search for. Defaults to "all"', nargs='?', const='all', type=str)
+    parser.add_argument('-c', '--color-mode', help='Turn colors on.', action='store_true', required=False)
+    parser.add_argument('-id', '--id-name', nargs='?', const='_', help='Search for specific tag id, defaults to show all tags with an id.', dest='id', required=False)
+    parser.add_argument('-cl', '--class-name', nargs='?', const='_', help='Search for specific tag class, defaults to show all tags with a class.', dest='class', required=False)
+    parser.add_argument('-src', '--src-only', help='Show src links only.', action='store_true', required=False)
+    parser.add_argument('-href', '--href-only', help='Show href links only.', action='store_true', required=False)
+    parser.add_argument('-names', '--names-only', help='Use with the -id or the -cl flags to show only the names of the ids/classes.', action='store_true', required=False)
+    args = vars(parser.parse_args())
+else: # ... or a pipe
+    #parser.add_argument('pipe', type=argparse.FileType('r'), help='text to from pipe')
+    parser.add_argument('tag', help='Tag to search for. Defaults to "all"', nargs='?', const='all', type=str)
+    parser.add_argument('-c', '--color-mode', help='Turn colors on.', action='store_true', required=False)
+    parser.add_argument('-id', '--id-name', nargs='?', const='_', help='Search for specific tag id, defaults to show all tags with an id.', dest='id', required=False)
+    parser.add_argument('-cl', '--class-name', nargs='?', const='_', help='Search for specific tag class, defaults to show all tags with a class.', dest='class', required=False)
+    parser.add_argument('-src', '--src-only', help='Show src links only.', action='store_true', required=False)
+    parser.add_argument('-href', '--href-only', help='Show href links only.', action='store_true', required=False)
+    parser.add_argument('-names', '--names-only', help='Use with the -id or the -cl flags to show only the names of the ids/classes.', action='store_true', required=False)
+    args = vars(parser.parse_args())
+
+# colors not enabled
+if not (args['color_mode']):
+    if ('website' in args):
+        WEBSITE = args['website']
+        if ("http" in WEBSITE):
+            pass
+        else:
+            WEBSITE = "http://" + WEBSITE
+        page = urllib2.urlopen(WEBSITE)
+        soup = BeautifulSoup(page.read())
+        if (str(args['tag']) == "all"):
+            tags_returned = soup.findAll(True)
+        else:
+            tags_returned = soup.findAll(args['tag'])
+        if not tags_returned:
+            sys.exit()
+
+        if (args['id']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('id') == args['id']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print str(tag.get('src')) 
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print str(tag.get('href')) 
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('id') is not None):
+                            print str(tag.get('id')) 
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print str(tag) 
+                    sys.exit()
+
+        if (args['class']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('class') == args['class']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print str(tag.get('src')) 
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print str(tag.get('href')) 
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('class') is not None):
+                            print str(tag.get('class')) 
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print str(tag) 
+                    sys.exit()
+    
+        else:
+            if (args['src_only']):
+                for tag in tags_returned:
+                    if (tag.get('src') is not None):
+                        print str(tag.get('src')) 
+                sys.exit()
+            elif (args['href_only']):
+                for tag in tags_returned:
+                    if (tag.get('href') is not None):
+                        print str(tag.get('href'))
+                sys.exit()
+            else:
+                for tag in tags_returned:
+                    print str(tag) 
+                sys.exit()
+    
+    # if it's a pipe
+    else:
+        #piped_website = sys.stdin.read()
+        #page = urllib2.urlopen(piped_website)
+        soup = BeautifulSoup(sys.stdin.read())
+        if (str(args['tag']) == "all"):
+            tags_returned = soup.findAll(True)
+        else:
+            tags_returned = soup.findAll(args['tag'])
+        if not tags_returned:
+            sys.exit()
+
+        if (args['id']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('id') == args['id']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print str(tag.get('src')) 
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print str(tag.get('href')) 
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('id') is not None):
+                            print str(tag.get('id')) 
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print str(tag) 
+                    sys.exit()
+
+        if (args['class']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('class') == args['class']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print str(tag.get('src')) 
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print str(tag.get('href')) 
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('class') is not None):
+                            print str(tag.get('class')) 
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print str(tag) 
+                    sys.exit()
+    
+        else:
+            if (args['src_only']):
+                for tag in tags_returned:
+                    if (tag.get('src') is not None):
+                        print str(tag.get('src')) 
+                sys.exit()
+            elif (args['href_only']):
+                for tag in tags_returned:
+                    if (tag.get('href') is not None):
+                        print str(tag.get('href'))
+                sys.exit()
+            else:
+                for tag in tags_returned:
+                    print str(tag) 
+                sys.exit()
+
+# colors enabled
+if (args['color_mode']):
+    if ('website' in args):
+        WEBSITE = args['website']
+        if ("http" in WEBSITE):
+            pass
+        else:
+            WEBSITE = "http://" + WEBSITE
+        page = urllib2.urlopen(WEBSITE)
+        soup = BeautifulSoup(page.read())
+        if (str(args['tag']) == "all"):
+            tags_returned = soup.findAll(True)
+        else:
+            tags_returned = soup.findAll(args['tag'])
+        if not tags_returned:
+            sys.exit()
+
+        if (args['id']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('id') == args['id']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print jcolor.BGBLACK + jcolor.FGYELLOW + str(tag.get('src')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('href')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('id') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('id')) + jcolor.ENDC
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print jcolor.BGBLACK + jcolor.FGWHITE + str(tag) + jcolor.ENDC
+                    sys.exit()
+
+        if (args['class']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('class') == args['class']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print jcolor.BGBLACK + jcolor.FGYELLOW + str(tag.get('src')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('href')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('class') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('class')) + jcolor.ENDC
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print jcolor.BGBLACK + jcolor.FGWHITE + str(tag) + jcolor.ENDC
+                    sys.exit()
+    
+        else:
+            if (args['src_only']):
+                for tag in tags_returned:
+                    if (tag.get('src') is not None):
+                        print jcolor.BGBLACK + jcolor.FGMAG + str(tag.get('src')) + jcolor.ENDC
+                sys.exit()
+            elif (args['href_only']):
+                for tag in tags_returned:
+                    if (tag.get('href') is not None):
+                        print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('href')) + jcolor.ENDC
+                sys.exit()
+            else:
+                for tag in tags_returned:
+                    print jcolor.BGBLACK + jcolor.FGGREEN + str(tag) + jcolor.ENDC
+                sys.exit()
+
+    # if it's a pipe
+    else:
+        #piped_website = sys.stdin.read()
+        #page = urllib2.urlopen(piped_website)
+        soup = BeautifulSoup(sys.stdin.read())
+        if (str(args['tag']) == "all"):
+            tags_returned = soup.findAll(True)
+        else:
+            tags_returned = soup.findAll(args['tag'])
+        if not tags_returned:
+            sys.exit()
+
+        if (args['id']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['id'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("id")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('id') == args['id']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print jcolor.BGBLACK + jcolor.FGYELLOW + str(tag.get('src')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('href')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('id') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('id')) + jcolor.ENDC
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print jcolor.BGBLACK + jcolor.FGWHITE + str(tag) + jcolor.ENDC
+                    sys.exit()
+
+        if (args['class']):
+            tags_returned_2 = []
+            if (str(args['tag']) == "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            elif (str(args['tag']) != "all" and (args['class'] == '_')):
+                for tag in tags_returned:
+                    if (tag.get("class")):
+                        tags_returned_2.append(tag)
+                    else:
+                        pass
+            else:
+                for tag in tags_returned:
+                    if (tag.get('class') == args['class']):
+                        tags_returned_2.append(tag)
+
+            if not tags_returned_2:
+                sys.exit()
+
+            else:
+                if (args['src_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('src') is not None):
+                            print jcolor.BGBLACK + jcolor.FGYELLOW + str(tag.get('src')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['href_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('href') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('href')) + jcolor.ENDC
+                    sys.exit()
+                elif (args['names_only']):
+                    for tag in  tags_returned_2:
+                        if (tag.get('class') is not None):
+                            print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('class')) + jcolor.ENDC
+                    sys.exit()
+                else:
+                    for tag in  tags_returned_2:
+                        print jcolor.BGBLACK + jcolor.FGWHITE + str(tag) + jcolor.ENDC
+                    sys.exit()
+    
+        else:
+            if (args['src_only']):
+                for tag in tags_returned:
+                    if (tag.get('src') is not None):
+                        print jcolor.BGBLACK + jcolor.FGMAG + str(tag.get('src')) + jcolor.ENDC
+                sys.exit()
+            elif (args['href_only']):
+                for tag in tags_returned:
+                    if (tag.get('href') is not None):
+                        print jcolor.BGBLACK + jcolor.FGORANGE + str(tag.get('href')) + jcolor.ENDC
+                sys.exit()
+            else:
+                for tag in tags_returned:
+                    print jcolor.BGBLACK + jcolor.FGGREEN + str(tag) + jcolor.ENDC
+                sys.exit()
