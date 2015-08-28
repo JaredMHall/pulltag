@@ -46,7 +46,9 @@ import jcolor
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('website', help='Name of website.')
+if sys.stdin.isatty():
+    parser.add_argument('website', help='Name of website.')
+
 parser.add_argument('tag', help='Tag to search for. Defaults to "all"', nargs='?', const='all', type=str)
 parser.add_argument('-c', '--color-mode', help='Turn colors on.', action='store_true', required=False)
 parser.add_argument('-id', '--id-name', nargs='?', const='_', help='Search for specific tag id, defaults to show all tags with an id.', dest='id', required=False)
@@ -108,7 +110,7 @@ def color_tags( tags ):
     elif (args['href_only']):
         return map(color_href, tags)
     elif (args['names_only']):
-        return map(color_tags, tags)
+        return map(color_names, tags)
     else:
         return map(color_none, tags)
 
