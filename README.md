@@ -28,10 +28,3 @@ Same as above except we leave off the website name.
 
 ##Help
 ```pulltag -h```  
-
-##Donate
-Donate Bitcoin: 19Ve bRAu 8ZdT zf7A JnJv dCyh qSBZ qMon T
-
-Donate Dogecoin: DBGX4dwhD7SHhfcgzKjSZ2yJDhruAPgPUP
-
-Donate via Paypal: http://bit.ly/1klxN1M
