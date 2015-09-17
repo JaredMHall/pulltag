@@ -41,8 +41,6 @@ import jcolor
 #
 
 # TODO remove debug messages
-# TODO make colors better
-# TODO ascii art
 
 parser = argparse.ArgumentParser()
 
@@ -50,7 +48,6 @@ if sys.stdin.isatty():
     parser.add_argument('website', help='Name of website.')
 
 parser.add_argument('tag', help='Tag to search for. Defaults to "all"', nargs='?', const='all', type=str)
-parser.add_argument('-c', '--color-mode', help='Turn colors on.', action='store_true', required=False)
 parser.add_argument('-id', '--id-name', nargs='?', const='_', help='Search for specific tag id, defaults to show all tags with an id.', dest='id', required=False)
 parser.add_argument('-cl', '--class-name', nargs='?', const='_', help='Search for specific tag class, defaults to show all tags with a class.', dest='class', required=False)
 parser.add_argument('-src', '--src-only', help='Show src links only.', action='store_true', required=False)
@@ -95,26 +92,6 @@ def get_soup():
 
     return BeautifulSoup( stream )
 
-def color_tags( tags ):
-    def color_src( tt ):
-        return jcolor.FGYELLOW + str( tt ) + jcolor.ENDC
-    def color_href( tt ):
-        return jcolor.FGORANGE + str( tt ) + jcolor.ENDC
-    def color_names( tt ):
-        return jcolor.FGORANGE + str( tt ) + jcolor.ENDC
-    def color_none( tt ):
-        return jcolor.FGGREEN + str( tt ) + jcolor.ENDC
-
-    if (args['src_only']):
-        return map(color_src, tags)
-    elif (args['href_only']):
-        return map(color_href, tags)
-    elif (args['names_only']):
-        return map(color_names, tags)
-    else:
-        return map(color_none, tags)
-
-# colors not enabled
 soup = get_soup()
 
 if (str(args['tag']) == "all"):
@@ -132,8 +109,4 @@ elif args['class']:
 tags_returned_2 = pick_tag_on_part( tags_returned )
 tags_returned_2 = filter(None, tags_returned_2)
 
-if not args['color_mode'] :
-    map( print_str, tags_returned_2)
-else:
-    strs = color_tags( tags_returned_2 )
-    map ( print_str, strs );
+map( print_str, tags_returned_2)
