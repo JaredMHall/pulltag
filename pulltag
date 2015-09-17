@@ -42,11 +42,11 @@ parser.add_argument('-names', '--names-only', help='Use with the -id or the -cl 
 args = vars(parser.parse_args())
 
 def pick_tag_on_part( lst ):
-    if (args['src_only']):
+    if args['src_only']:
         return  map( lambda x : x.get('src'), lst )
-    elif (args['href_only']):
+    elif args['href_only']:
         return  map( lambda x : x.get('href'), lst )
-    elif (args['names_only']):
+    elif args['names_only']:
         return  map( lambda x : x.get('id'), lst )
     #return a copy of the list if nothing will be filtered
     return lst[:]
@@ -69,7 +69,7 @@ def get_soup():
     stream = None
     if 'website' in args:
         WEBSITE = args['website']
-        if ("http" not in WEBSITE):
+        if "http" not in WEBSITE:
             WEBSITE = "http://" + WEBSITE
         page = urllib2.urlopen(WEBSITE)
         stream = page.read()
@@ -80,14 +80,14 @@ def get_soup():
 
 soup = get_soup()
 
-if (str(args['tag']) == "all"):
+if str(args['tag']) == "all":
     tags_returned = soup.findAll(True)
 else:
     tags_returned = soup.findAll(args['tag'])
 if not tags_returned:
     sys.exit()
 
-if ( args['id'] ):
+if  args['id'] :
     tags_returned_2 = filter_by_attribute(tags_returned, 'id')
 elif args['class']:
     tags_returned_2 = filter_by_attribute(tags_returned, 'class')
