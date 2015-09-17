@@ -3,7 +3,6 @@ import argparse
 import sys
 from BeautifulSoup import BeautifulSoup
 import urllib2
-import jcolor 
 
 #
 #      ___         ___                                                     ___           ___          
@@ -18,29 +17,16 @@ import jcolor
 #    \:\__\      \::/  /       \::/  /       \::/  /         \:\__\      \:\__\        \::/  /       
 #     \/__/       \/__/         \/__/         \/__/           \/__/       \/__/         \/__/       
 #
-# Author: Jared Marshall Hall
+# Author: Jared Marshall Hall 
+# Modified by: Zachary Parchman
 # License: MIT License
 # Contact: hall.jared.m@gmail.com
 # Created: August 21, 2015
-# Purpose: Easily and quickly scrape html tags by name, id, and class. Return full tag text, id name, class name, or just src or href links. 
-# Why: To my knowledge there are libraries, but there aren't any programs designed specifically for this purpose.   
+# Purpose: Easily and quickly scrape html tags by name, id, and class. Return
+# full tag text, id name, class name, or just src or href links. 
+# Why: To my knowledge there are libraries, but there aren't any programs
+# designed specifically for this purpose.   
 # Uses: Can be use with a website name as input, or a pipe. 
-# Installation: Can be added to usr/local/bin like so (for calling straight from the command line regardless of current folder):
-#         cd /usr/local/bin (command below must be called from within this folder)
-#         sudo ln -s <path_to_pulltag/pulltag>  (add symbolic link to pulltag.. make sure jcolor.py is in the same directory as original pulltag)
-#         chmod +x pulltag (make pulltag executable)
-#
-#     Donate Bitcoin:
-#     1AYk yF8P 1k19 NpAA xxEm WBa6 rp7g wgHz dr
-#
-#     Donate Dogecoin:
-#     DBGX4dwhD7SHhfcgzKjSZ2yJDhruAPgPUP
-#
-#     Donate via Paypal:
-#     http://bit.ly/1klxN1M
-#
-
-# TODO remove debug messages
 
 parser = argparse.ArgumentParser()
 
