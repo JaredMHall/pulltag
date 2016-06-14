@@ -13,7 +13,7 @@ Can be added to usr/local/bin like so (for calling straight from the command lin
 
 ##Examples with a website as input
 ```pulltag doge4.us``` (minimum required argument is the name of the website, this returns the source code for said page)  
-```pulltag doge4.us p``` (return all of the <p> tags in the page.. returns each tag in it's entirety)  
+```pulltag doge4.us p``` (return all of the ```<p>``` tags in the page.. returns each tag in it's entirety)  
 ```pulltag doge4.us -id``` (return all tags with an id in their entirety)  
 ```pulltag doge4.us -id specific_tag_name``` (pull a specific tag id by name and view it in it's entirety)  
 ```pulltag doge4.us -id -names``` (return all tag id names ONLY)  
@@ -28,10 +28,3 @@ Same as above except we leave off the website name.
 
 ##Help
 ```pulltag -h```  
-
-##Donate
-Donate Bitcoin: 19Ve bRAu 8ZdT zf7A JnJv dCyh qSBZ qMon T
-
-Donate Dogecoin: DBGX4dwhD7SHhfcgzKjSZ2yJDhruAPgPUP
-
-Donate via Paypal: http://bit.ly/1klxN1M
